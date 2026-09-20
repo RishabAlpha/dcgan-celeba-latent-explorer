@@ -1,18 +1,18 @@
 {
-  "fid_score": 123.17,
-  "n_real_samples": 2048,
-  "n_fake_samples": 2048,
-  "training": {
-    "epochs": 30,
-    "train_subset": 10000,
-    "batch_size": 128,
-    "lr": 0.0002,
-    "betas": [
-      0.5,
-      0.999
-    ],
-    "label_smoothing": 0.9,
-    "optimizer_D_lr_multiplier": 0.5
-  },
-  "notes": "FID computed on 10k-subset-trained model; full CelebA (200k) would yield lower FID"
+  "fid_score": null,
+  "fid_note": "FID=123.17 measured on 10k-subset model; not re-measured after full-data retrain due to library conflict",
+  "training_stages": [
+    {
+      "stage": "initial",
+      "epochs": 30,
+      "subset": 10000,
+      "notes": "baseline"
+    },
+    {
+      "stage": "full",
+      "epochs": 12,
+      "subset": 202599,
+      "notes": "final model; label smoothing=0.9"
+    }
+  ]
 }
