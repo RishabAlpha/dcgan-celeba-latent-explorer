@@ -60,3 +60,59 @@ Both models use DCGAN paper weight initialization (`N(0, 0.02)`).
 - **Interactive app** — Gradio UI for on-demand generation, grids, and morphs
 
 ## Repo Structure
+
+├── checkpoints/
+│ ├── generator_final.pth # trained G weights (14 MB)
+│ ├── history.json # per-epoch losses
+│ └── results.json # summary metrics
+├── assets/
+│ ├── interpolation.gif # latent morph
+│ ├── latent_arithmetic.png # direction transfer demo
+│ └── samples/ # per-epoch grids
+└── src/, notebooks/ # (reserved for code organization)
+
+
+
+## How to Use
+
+python
+import torch
+from model import Generator   # see notebook for class definition
+
+G = Generator(z_dim=100, features_g=64).to("cuda")
+ckpt = torch.load("checkpoints/generator_final.pth", map_location="cuda")
+G.load_state_dict(ckpt["model_state_dict"])
+G.eval()
+
+z = torch.randn(1, 100, device="cuda")
+with torch.no_grad():
+    face = (G(z) + 1) / 2   # [-1,1] → [0,1] 
+
+
+
+Honest Limitations
+Resolution: 64×64 (128×128 would need ~4× longer training)
+
+Training time: 12 epochs is sufficient for recognizable faces but
+not for photorealistic quality — DCGAN papers typically train 25+ epochs
+
+FID: final model FID not re-measured due to a torchmetrics/torch-fidelity
+version conflict; baseline (10k subset) model scored 123.17
+
+Color drift: mild saturation on some samples, a known DCGAN failure mode
+
+Future Work
+Train on 128×128 with progressive growing
+
+Add conditional generation (Male/Smiling attributes from CelebA labels)
+
+Replace DCGAN with a small diffusion model for higher fidelity
+
+References
+Radford, Metz, Chintala. Unsupervised Representation Learning with Deep
+Convolutional Generative Adversarial Networks. ICLR 2016.
+
+Liu et al. Deep Learning Face Attributes in the Wild. ICCV 2015 (CelebA).
+
+Built as part of IITM BS — Deep Learning & Generative AI coursework.
+
